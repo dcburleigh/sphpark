@@ -6,6 +6,10 @@
 *  Usage:
 *    require_once 'HookHandler.php';
 *    
+*    $hook_handler = new HookHandler( array('logfile' => '/path/to/file') );
+*    
+*    
+*    
 *    
 *
 */
@@ -16,8 +20,6 @@ class HookHandler {
 
 	public $secret;   // token expected for a valid application, configured by app,
 	
-	// Spark-specific?
-	public $resource_type;
 	
 	// request parameters expected by DelDev apps
 	public $hook_name;
