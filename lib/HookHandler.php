@@ -22,7 +22,7 @@ class HookHandler {
 	
 	
 	// request parameters expected by DelDev apps
-	public $hook_name;
+	//public $hook_name;
 	private $request_secret;  // the token sent with the request
 	private $action;
 	
@@ -99,8 +99,8 @@ class HookHandler {
 		$this->log( print_r($this->data, true) );
 	
 		//? 
-		$this->hook_name = $this->data->{'name'};
-		$this->resource_type = $this->data->{'resource'};
+		#$this->hook_name = $this->data->{'name'};
+		#$this->resource_type = $this->data->{'resource'};
 	
 	}
 	
