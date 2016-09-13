@@ -219,7 +219,7 @@ class SparkClient {
 		$this->rooms = array();
 		$this->num_rooms = 0;
 		
-		$this->get( 'rooms/',  $args,  array('showSipAddress', 'max'));
+		$this->get( 'rooms/',  $args,  array('showSipAddress', 'max', 'teamId'));
 		if ($this->error) {
 			return;
 		}
@@ -229,13 +229,11 @@ class SparkClient {
 		
 	}
 	public function getMessage( $message_id ) {
-
 		$this->get('messages/' . $message_id,  array() );
 		if ($this->error) {
 			return;
 		}
 		return $this->response_object;
-		
 	}
 
 	public function getMessages( $args = array() ) {
@@ -291,8 +289,12 @@ class SparkClient {
 		return $this->post( 'messages', $args);
 				
 	}
+	
+	# deleteRoom roomId 
+	# putRoom roomId {title }
 	public function postRoom( $args ) {
 
+		# $valid = array( 'title', 'teamId' )
 		return $this->post( 'rooms', $args);
 	}
 
