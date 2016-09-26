@@ -1,16 +1,20 @@
-<?php 
+<?php
 
 /*
  * PHP handler for Cisco Spark Webhooks
 *
 *  Usage:
 *    require_once 'HookHandler.php';
-*    
+*
 *    $hook_handler = new HookHandler( array('logfile' => '/path/to/file') );
-*    
-*    
-*    
-*    
+*
+*    $hook_handler->getRequest();
+*
+*    print "item = " . $hook_handler->data->{'item'};
+
+
+*
+*
 *
 */
 class HookHandler {
@@ -19,20 +23,20 @@ class HookHandler {
 	public $data;    # JSON Request object
 
 	public $secret;   // token expected for a valid application, configured by app,
-	
-	
+
+
 	// request parameters expected by DelDev apps
 	public $hook_name;
 	private $request_secret;  // the token sent with the request
 	private $action;
-	
+
 	private $logfile = '/tmp/webhook.log';
 	private $logFH;
 
-	
+
 	private $response = array();  # Response object
 	private $response_text = '';  # JSON-encoded response object
-	
+
 	public $error;
 
 	public function __construct( $args = array()  ){
@@ -76,7 +80,7 @@ class HookHandler {
 		}
 
 		$body = file_get_contents("php://input");
-		
+
 		if ( $body == '' ) {
 
 			$this->log("GET contents:");
@@ -87,9 +91,9 @@ class HookHandler {
 
 			// $this->error = "no body";
 			// fwrite($this->logFH, "body=$body \n");
-			$this->log("no POST/PUT body");
+			$this->log("no POST/PUT body;  n=" . count($_GET) . " GET params");
 			return;
-				
+
 		}
 		$this->log("POST/PUT contents:");
 
@@ -97,17 +101,17 @@ class HookHandler {
 
 		$this->data = json_decode($body);
 		$this->log( print_r($this->data, true) );
-	
-		//? 
+
+		//?
 		$this->hook_name = $this->data->{'name'};
 		$this->resource_type = $this->data->{'resource'};
-	
+
 	}
-	
+
 	public function addResponseElement( $name, $value) {
 		$this->response[ $name ] = $value;
 	}
-	
+
 	public function printResponse() {
 		$this->addResponseElement( 'error', $this->error);
 		$this->response_text = json_encode( $this->response);

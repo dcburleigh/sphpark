@@ -1,20 +1,26 @@
-<?php 
+<?php
 
 // for hooks....
 
-// for lib 
+// for lib
 
 // for Spark
 
 $spark_token = '.....';
 
-# DelDev Notifer
-$spark_client_id = '';
+/*
+ * remote auth
+ *   from the 'My Apps' page 
+ */
 
-#
+$spark_client_id = '';
 $spark_client_secret = '';
+$redirect_url = '';
+
 $app_state = '';
 
+
+$user_id = '';
 
 
 ?>
