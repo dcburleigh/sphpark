@@ -7,7 +7,7 @@ require_once 'HookHandler.php';
 require_once 'config_inc.php';
 
 $wh = new HookHandler ( array (
-		'logfile' => '../logs/hook_box.log' 
+		'logfile' => '../logs/hook_basic.log' 
 ) );
 $wh->log ( "started " );
 
@@ -75,6 +75,13 @@ function processHookRequest() {
 	 *  do stuff
 	 */
 	
+	if ( $wh->data['name'] ) {
+		$wh->addResponseElement("answer", "your name is " . $wh->data['name']  );
+	}
+	else {
+		$wh->addResponseElement("answer", "no name " );
+		
+	}
 	$wh->addResponseElement ( 'contents', 'ok' );
 }
 ?>
