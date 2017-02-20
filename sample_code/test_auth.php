@@ -20,6 +20,7 @@ if ( ! isset($user_id)) {
 	exit(-1);
 }
 
+// debugging ....
 if (!isset($_SESSION['count'])) {
   $_SESSION['count'] = 0;
 } else {
@@ -34,8 +35,9 @@ if ( isset($_SESSION['auth'])  ) {
 require_once 'SparkApp.php';
 	$app = new SparkAppAuth();
 
+	// init from config_inc
 	$app->user_id = $user_id;
-	$app->redirect_uri = $auth_url;
+	$app->redirect_uri = $redirect_url;
 
 
 	if (isset($_POST['request_auth'])) {
@@ -81,7 +83,15 @@ require_once 'SparkApp.php';
 	// lookup token
 
 	// if no token
+	print "<h4>Step 1. Request permission</h4>";
+
 	$app->requestAuthForm();
+	if ( $app->error ) {
+		print "<p>ERROR: " . $app->error . "</p>";
+	}
+	print "<h4>Step 2. Get access token </h4>";
+
+	print "<h4>Step 3. Refresh access token </h4>";
 
 
 ?>

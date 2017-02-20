@@ -4,8 +4,10 @@
 <body>
 <h2>Try</h2>
 <ul>
-	<li><a href="test_auth.php">App Authentication<a></li>
+	<li class=hidden><a href="test_auth.php">App Authentication<a></li>
 		<li><a href="listRooms.php">List Rooms<a></li>
+		<li><a href="listPeople.php">List People<a></li>
+		<li><a href="showThread.php">Show Thread<a></li>
 </ul>
 
 <h3>Reference</h3>
