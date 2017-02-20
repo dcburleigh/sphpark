@@ -2,3 +2,11 @@
 	margin-left:20px;
 	border: solid 3px black;
 }
+
+div.message {
+	border: none;
+	margin: 10px 5px 0px 10px;
+}
+div.message_date {
+	display:inline;
+}

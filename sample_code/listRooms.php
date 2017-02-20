@@ -38,16 +38,16 @@
 	}
 	$sp = new SparkClient($t);
 
-					if ( $sp->error ) {
-						die("startup failed: " . $sp->error);
-					}
+	if ( $sp->error ) {
+		die("startup failed: " . $sp->error);
+	}
 
 	if ( isset($_POST['list_rooms'])){
 
 		print "<h3>Rooms</h3>";
 
 		#$msg = $sp->getRooms();
-#		$msg = $sp->getRooms( array('showSipAddress' => 1));
+		#		$msg = $sp->getRooms( array('showSipAddress' => 1));
 		$limit = $max_items;
 		if ($match_value){
 			# don't limit
@@ -57,9 +57,9 @@
 		print " match=$match_value limit=$limit";
 		$msg = $sp->getRooms( array('showSipAddress' => 1,  'max' => $limit));
 
-				if ( $sp->error ) {
-					die("get failed: " . $sp->error);
-				}
+		if ( $sp->error ) {
+			die("get failed: " . $sp->error);
+		}
 		if ( 0 ) {
 			print "<div class='raw_content'>";
 			print_r( $sp->rooms);
@@ -70,15 +70,15 @@
 		print "<p>" . $sp->num_rooms . " Rooms</p>";
 
 
-			print '<form method="post" action="">';
-			print "<ul>";
-			$n = 0;
-			foreach ($sp->rooms as $room  ){
-				if ($n >= $max_items ){
-					break;
-				}
+		print '<form method="post" action="">';
+		print "<ul>";
+		$n = 0;
+		foreach ($sp->rooms as $room  ){
+			if ($n >= $max_items ){
+				break;
+			}
 
-				if ( $match_value && ! preg_match("/$match_value/i", $room->{'title'} ) ) {
+			if ( $match_value && ! preg_match("/$match_value/i", $room->{'title'} ) ) {
 					continue;
 				}
 				$b = '<input type=submit name="room_id" value="' . $room->{'id'} . '" />';
@@ -91,21 +91,21 @@
 				. " SIP: " . $room->{'sipAddress'}
 				#. $room->{'id'}
 				. "</li>";
-			}
-			print "</ul>";
-			print '</form>';
+		}
+		print "</ul>";
+		print '</form>';
 
 	} // get
 
-?>
+	?>
 
 
 	<form method="post" action="">
 
-			Match: <input type=text name=match_value value="<?php echo $match_value; ?>" />
-			Max: <input type=test name="max_items" value="<?php echo $max_items; ?>" />
-
-			<input type="submit" name="list_rooms" value="List rooms" />
+		Match: <input type=text name=match_value
+			value="<?php echo $match_value; ?>" /> Max: <input type=test
+			name="max_items" value="<?php echo $max_items; ?>" /> <input
+			type="submit" name="list_rooms" value="List rooms" />
 	</form>
 
 </body>

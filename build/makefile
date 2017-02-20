@@ -1,5 +1,8 @@
 
 
+WEBROOT = /Users/engineer/Sites/apps
+LOCALURL = http://localhost/~engineer/spark/
+
 REPOROOT = /home/darin/git
 
 REMOTEPATH = /home/osmazome/public_html/silurian/spark
@@ -8,39 +11,62 @@ REMOTEURL = http://www.silurian.org/spark
 REMOTE = utiluser@filedepot.cdw.com
 REMOTEPATH = /srv/filedepot/bots/spark
 
-#
-# local web
-#
 WEBDIR = /home/darin/git/silurian/spark
 
 LOGDIR = /home/darin/git/silurian/log
 LOCALURL = http://localhost/~engineer/spark/
 
+REPOROOT = $(g)
+
+REMOTE = utiluser@filedepot.cdw.com
+REMOTEPATH = /srv/filedepot/bots/spark
+REMOTEURL = https://filedepot.cdw.com/bots/spark
+
+#
+# local web
+#
+WEBDIR = 
+
+# ???
+LOGDIR = 
+
 include makefile.conf
+
+ifeq ($REPO),)
+REPO = $(REPOROOT)/sphpark
+endif
+
+ifeq ($(WEBDIR),)
+WEBDIR = $(WEBROOT)/spark
+endif
 
 COREFILES = config_inc.php auth.php getSparkAuth.php SparkApp.php
 COREFILES = auth.php getSparkAuth.php SparkApp.php
 
 SPFILES = $(COREFILES) index.html
 
+# sample code for testing core functionality
 TFILES = $(COREFILES)  test.php test_post.php hook_test.php
-TFILES =  index.php listRooms.php test_auth.php
+TFILES =  index.php listRooms.php test_auth.php showThread.php
+TFILES =  index.php listRooms.php listPeople.php 
 #install-test-auth: TFILES = test_auth.php
+
+STFILES = sparkui.css
 
 HFILES = $(COREFILES) HookHandler.php hook_test.php
 
-LIBFILES =  HookHandler.php  SparkHookHandler.php SparkClient.php SparkApp.php AuthHandler.php
+LIBFILES =  HookHandler.php  SparkHookHandler.php SparkClient.php SparkApp.php AuthHandler.php SparkThread.php
 
 HFILES = $(COREFILES) HookHandler.php hook_test.php
 HFILES = SparkHookHandler.php HookHandler.php hook_test.php
 
 HOOKFILES = hook_basic.php hook_example1.php
 
-
 TESTlocal = $(patsubst %,$(WEBDIR)/%,$(TFILES))
+STlocal = $(patsubst %,$(WEBDIR)/%,$(STFILES))
 
 LIBlocal = $(patsubst %,$(WEBDIR)/%,$(LIBFILES))
-LIBsrc = $(patsubst %,$(REPOROOT)/sphpark/lib/%,$(LIBFILES))
+LIBsrc = $(patsubst %,$(REPO)/lib/%,$(LIBFILES))
 
 HOOKFILES = hook_basic.php  hook_box.php spark_example0.php
 
@@ -50,31 +76,24 @@ HOOKlocal = $(patsubst %,$(WEBDIR)/%,$(HOOKFILES))
 
 update-me: makefile
 
-makefile: %: $(REPOROOT)/sphpark/build/%
+makefile: %: $(REPO)/build/%
 	cp $< $@
 
 install-basic: $(WEBDIR) $(LOGDIR) install-lib  $(HOOKlocal)
 
 install-lib: $(WEBDIR) $(LIBlocal)
 
-$(LIBlocal): $(WEBDIR)/%: $(REPOROOT)/sphpark/lib/%
+$(LIBlocal): $(WEBDIR)/%: $(REPO)/lib/%
 	cp $< $@
 
-$(HOOKlocal): $(WEBDIR)/%: $(REPOROOT)/sphpark/hooks/%
-	cp $< $@
-
-#install1: $(WEBDIR)/hook_basic.php
-
-$(LIBlocal): $(WEBDIR)/%: $(REPO)/sphpark/lib/%
-	cp $< $@
-
-$(HOOKlocal): $(WEBDIR)/%: $(REPO)/sphpark/hooks/%
+$(HOOKlocal): $(WEBDIR)/%: $(REPO)/hooks/%
 	cp $< $@
 
 show-remote:
 	echo remote $(REMOTE)
 	echo remote $(REMOTEURL)
 	echo remote path $(REMOTEPATH)
+	ssh $(REMOTE) ls -l $(REMOTEPATH)
 
 LIBsrc = $(patsubst %,$(REPO)/sphpark/lib/%,$(LIBFILES))
 HOOKsrc = $(patsubst %,$(REPO)/sphpark/hooks/%,$(HOOKFILES))
@@ -92,10 +111,33 @@ $(LOGDIR):
 	chmod 777 $(LOGDIR)
 
 
-install-test-auth install-test: $(WEBDIR) install-lib $(TESTlocal) $(WEBDIR)/config_inc.php
+COMMONDIR = $(REPOROOT)/webroot
 
-$(TESTlocal): $(WEBDIR)/%: $(REPOROOT)/sphpark/sample_code/%
+#COMMONFILES = deldev/utils.php
+#COMMONFILESlocal = $(patsubst %,$(WEBDIR)/%,$(COMMONFILES))
+COMMONFILESlocal = $(WEBDIR)/utils.php $(WEBDIR)/deldev.css
+
+test2: 
+	echo trunk $(REPOROOT)
+	echo REPO $(REPO)
+	echo WEB $(WEBDIR)
+
+
+install-common: $(COMMONFILESlocal) 
+
+$(WEBDIR)/utils.php: $(WEBDIR)/%: $(COMMONDIR)/deldev/%
 	cp $< $@
+
+$(WEBDIR)/deldev.css: $(WEBDIR)/%: $(COMMONDIR)/styles/%
+	cp $< $@
+
+install-test-auth install-test: $(WEBDIR) install-lib $(TESTlocal) $(STlocal) $(WEBDIR)/config_inc.php
+
+$(TESTlocal): $(WEBDIR)/%: $(REPO)/sample_code/%
+	cp $< $@
+
+$(STlocal): $(WEBDIR)/%: $(REPO)/styles/%
+		cp $< $@
 
 #install-test-auth: $(WEBDIR) install-lib
 #
@@ -104,7 +146,7 @@ $(TESTlocal): $(WEBDIR)/%: $(REPOROOT)/sphpark/sample_code/%
 AUTHLIB =  lib/HookHandler.php  lib/SparkApp.php lib/AuthHandler.php
 
 AUTHFILES = images/deldev_avatar.png  hooks/auth_handler.php build/config_inc.example.php
-AUTHFILESlocal = $(patsubst %,$(REPOROOT)/sphpark/%,$(AUTHFILES) $(AUTHLIB))
+AUTHFILESlocal = $(patsubst %,$(REPO)/%,$(AUTHFILES) $(AUTHLIB))
 
 upload-app-auth:  $(AUTHFILESlocal)
 	rsync -av  $(AUTHFILESlocal) $(REMOTE):$(REMOTEPATH)
@@ -112,9 +154,6 @@ upload-app-auth:  $(AUTHFILESlocal)
 upload-app-config:
 	rsync -av config_inc.SIL.php $(REMOTE):$(REMOTEPATH)/config_inc.php
 
-
-show-remote:
-	ssh $(REMOTE) ls -l $(REMOTEPATH)
 
 #
 # upload to remote server
