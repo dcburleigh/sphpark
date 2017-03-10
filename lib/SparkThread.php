@@ -19,10 +19,16 @@
 *
 * $th->getMessages();
 *
+* ## display
+* 
 * $text = $th->getTextBlock();
 *
 * $thread_array = $th->getThread(  <FORMAT> );
 *
+*$text = $th->asText( <format> );
+*
+*  where <format> = [ html | wiki | plain ]
+*  
 *
 *
 *
@@ -61,11 +67,24 @@ class SparkThread extends SparkClient {
 
 	public $max_messages;
 
-	public function setRoom($room_id, $room_name) {
+	public function getRoomName(){
+		return $this->room_name;
+	}
+	public function setRoom($room_id, $room_name = null) {
 		// validate
 
 		$this->room_id = $room_id;
+		if ( $room_name == null){
+			$r = $this->getRoom($this->room_id);
+			if ( $r ){
+				$room_name = $r->title;
+			}
+			else {
+				$room_name = 'NO SUCH ROOM';
+			}
+		}
 		$this->room_name = $room_name;
+		return $this->room_name;
 
 	}
 
@@ -243,8 +262,14 @@ class SparkThread extends SparkClient {
 
 
 	}
+	public function asJSON( ){
+		$obj = array( 'items' => $this->messages);
+			$text = json_encode($obj);
+			return $text;
+		return $this->response;
+	}
 	public function asText( $format = 'html') {
-
+		
 		if ( isset($this->text_block)){
 			return $this->text_block;
 		}
@@ -275,6 +300,12 @@ class SparkThread extends SparkClient {
 
 			if ( $format == 'wiki'){
 				$t .= $this->formatMessageWiki($message,$format);
+			}
+			elseif ( $format == 'json'){
+				$t .= json_encode($message);
+			}
+			elseif ( $format == 'list'){
+				$t .= implode("\t", array($message->id, $message->created, "\n"));
 			}
 			else {
 
@@ -354,7 +385,7 @@ class SparkThread extends SparkClient {
 		return $m;
 	}
 
-	function reviewThread(){
+	function reviewThread( $filter_string = null){
 
 		$u = array();
 		$begin_date ='';
@@ -364,7 +395,7 @@ class SparkThread extends SparkClient {
 		$last_date  = '';
 		$this->message_order = 1;
 
-		// assume messages are in reverse order
+		// assume messages are in reverse order:  newest -> oldest
 		$ilast = count($this->messages) - 1;
 		if ( isset($this->max_messages) ){
 			$liast = $this->max_messages -1;
@@ -378,6 +409,17 @@ class SparkThread extends SparkClient {
 		//(" 0 .. $ilast begin=" . $begin_date . " end=$end_date");
 
 		foreach ( $this->messages as $message ){
+			if ( isset($filter_string)){
+				$match = '/' . $filter_string . '/i';
+				if ( ! preg_match( $match, $message->{'text'} )){
+					//$message->{'text'} .= ' XXX';
+					array_splice($this->messages, $n, 1);
+					continue;
+				}
+				
+				
+			}
+			
 			/*
 			 if ($n >  $ilast){
 			break;
@@ -410,7 +452,20 @@ class SparkThread extends SparkClient {
 
 
 		}
+		// reset if messages were filtered
+		$this->num_messages = count($this->messages);
 
+		// assume messages are in reverse order:  newest -> oldest
+		$ilast = count($this->messages) - 1;
+		if ( isset($this->max_messages) ){
+			$liast = $this->max_messages -1;
+		}
+		$this->begin_message_id = $this->messages[$ilast]->{'id'};
+		$this->end_message_id = $this->messages[0]->{'id'};
+		
+		$begin_date = $this->messages[$ilast]->{'created'};
+		$end_date = $this->messages[0]->{'created'};
+		
 		$this->members = $u;
 		$this->setDateRange($begin_date, $end_date);
 	}
