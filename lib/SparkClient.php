@@ -95,9 +95,9 @@ class SparkClient {
 
 	}
 	public function clearRequest() {
-		$self->response = '';
-		$self->response_code = '';
-		$self->error = '';
+		$this->response = '';
+		$this->response_code = '';
+		$this->error = '';
 	}
 	/*
 	 public function getToken() {
@@ -108,6 +108,21 @@ class SparkClient {
 		$this->token = $token;
 
 		$this->initClient();
+	}
+	public function validateToken(){
+		$this->token_valid = 0;
+		if ( ! $this->token){
+			$this->error = "no token";
+			return $this->token_valid;
+		}
+		$this->getPerson('me');
+		#$this->getMe();
+		if ( $this->error){
+			return $this->token_valid;
+		}
+
+		$this->token_valid = 1;
+		return $this->token_valid;
 	}
 
 	public function getResponse() {
@@ -184,7 +199,7 @@ class SparkClient {
 			return;
 		}
 
-		$this->response = $contents;
+		$this->response = $contents;  // JSON string
 		$this->response_object = json_decode($contents);
 	}
 
@@ -202,6 +217,9 @@ class SparkClient {
 
 	}
 
+	public function getMe() {
+		return $this->getPerson( 'me');
+	}
 	public function getPerson( $person_id){
 
 		$this->get('people/' . $person_id,  array() );
