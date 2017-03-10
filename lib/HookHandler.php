@@ -8,6 +8,9 @@
 *
 *    $hook_handler = new HookHandler( array('logfile' => '/path/to/file') );
 *
+*    // parse the request object,
+*    // populate the 'data' attribute
+*
 *    $hook_handler->getRequest();
 *
 *    print "item = " . $hook_handler->data->{'item'};
@@ -50,11 +53,9 @@ class HookHandler {
 
 
 	private function openLog() {
-		$d = date('c');
-		$this->logFH = fopen( $this->logfile, 'a');
-		$this->log("begin");
-		#fwrite($this->logFH, "$d got request\n");
 
+		$this->logFH = fopen( $this->logfile, 'a');
+		$this->log(__METHOD__ . " begin");
 	}
 	public function log( $text ) {
 		$d = date('c');
@@ -76,7 +77,7 @@ class HookHandler {
 			#parse_str($_SERVER['QUERY_STRING'], $parameters);
 			#$this->log("got params=" . print_r($parameters, true));
 
-			$this->log("get = " . print_r($_GET, true));
+			#$this->log("get = " . print_r($_GET, true));
 		}
 
 		$body = file_get_contents("php://input");
@@ -91,22 +92,22 @@ class HookHandler {
 
 			// $this->error = "no body";
 			// fwrite($this->logFH, "body=$body \n");
-			$this->log("no POST/PUT body;  n=" . count($_GET) . " GET params");
+			#$this->log("no POST/PUT body;  n=" . count($_GET) . " GET params");
 			return;
 
 		}
-		$this->log("POST/PUT contents:");
+		// $this->log("POST/PUT contents:");
 
-		fwrite($this->logFH, "body=$body \n");
+		// fwrite($this->logFH, "body=$body \n"); // raw contents (verbose logging)
 
 		$this->data = json_decode($body);
-		$this->log( print_r($this->data, true) );
+		//$this->log( print_r($this->data, true) );  // parsed contents
 
 		//?
 		$this->hook_name = $this->data->{'name'};
 		$this->resource_type = $this->data->{'resource'};
 
-
+	}
 	public function addResponseElement( $name, $value) {
 		$this->response[ $name ] = $value;
 	}
