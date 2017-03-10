@@ -12,13 +12,16 @@ class SparkHookHandler extends HookHandler {
 	public $room_id;
 	public $message_id;
 
-	
+
 	function getRequest() {
 		parent::getRequest();
-		
+
 
 		$this->hook_name = $this->data->{'name'};
 		$this->resource_type = $this->data->{'resource'};
 
-		$this->message_id = $this->data->{'id'};	}
+		###$this->message_id = $this->data->{'id'};
+
+		$this->message_id = $this->data->data->id;
+	}
 }
