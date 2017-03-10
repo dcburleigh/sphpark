@@ -12,7 +12,7 @@ $wh = new HookHandler( array('logfile' => '../logs/hook_box.log'));
 $wh->log("started ");
 $wh->log("got client");
 
-require_once 'SparkClient.php';
+require_once 'BoxClient.php';
 
 $client = new BoxClient( $box_token);
 

@@ -4,7 +4,6 @@
  *
  */
 
-// print "begins";
 require_once 'SparkHookHandler.php';
 require_once 'config_inc.php';
 require_once 'SparkClient.php';
@@ -12,9 +11,9 @@ require_once 'SparkClient.php';
 $wh = new SparkHookHandler ( array (
 		'logfile' => '../logs/hook.log' 
 ) );
-$wh->log ( "started " );
+// $wh->log ( "started " );
 $sp = new SparkClient ();
-$wh->log ( "got client" );
+// $wh->log ( "got client" );
 
 try {
 	
@@ -23,7 +22,9 @@ try {
 	// print "got error=" . $e->getMessage() ;
 	$wh->log ( "process failed: err=" . $e->getMessage () );
 }
-$wh->printResponse ();
+$wh->printResponse (); // reply
+
+
 function processHookRequest() {
 	global $wh, $sp;
 	
@@ -41,20 +42,25 @@ function processHookRequest() {
 	
 	if (! $wh->message_id) {
 		$wh->error = "no message ID";
-		$wh->log ( "no message ID" );
+		$wh->log ( "no message ID in " . print_r($this->data, true) );
 		return;
 	}
 	
 	// messages
-	// ##$id = $wh->data->{'id'};
+	
+	/*
+	 * 
 	$id = $wh->data->{'data'}->{'id'};
+	$id = $wh->data->data->id;
 	// print "get message: $id ";
-	$wh->log ( "get message: $id " );
+	$wh->log ( "get message: $id  =" . $wh->message_id );
 	return;
+	 */
 	
 	try {
-		
-		$msg = $sp->getMessage ( $id );
+
+		$wh->log ( "get message: " . $wh->message_id );
+		$msg = $sp->getMessage ( $wh->message_id);
 	} catch ( Exception $e ) {
 		$wh->responseText ();
 		$wh->log ( "get failed: " . $e->getMessage () );
@@ -67,10 +73,11 @@ function processHookRequest() {
 		$wh->log ( print_r ( $msg, true ) );
 		return;
 	}
-	
-	$wh->log ( "message= " . $msg->{'text'} );
-	$room_id = $wh->data->{'data'}->{'roomId'};
+
+	$room_id = $wh->data->data->roomId;
 	$text = $msg->{'text'};
+	$wh->log( implode("\t", array($wh->hook_name,  $msg->{'personEmail'}, $msg->{'roomId'} ) )   );
+	$wh->log( text );
 	
 	//
 	// switch
