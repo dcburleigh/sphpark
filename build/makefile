@@ -7,9 +7,12 @@ REPOROOT = /home/darin/git
 
 REMOTEPATH = /home/osmazome/public_html/silurian/spark
 REMOTEURL = http://www.silurian.org/spark
+REMOTE = osmazome@osmazome.org
 
+# -- 
 REMOTE = utiluser@filedepot.cdw.com
 REMOTEPATH = /srv/filedepot/bots/spark
+REMOTEURL = https://www.filedepot.cde.com/spark
 
 WEBDIR = /home/darin/git/silurian/spark
 
@@ -48,7 +51,7 @@ SPFILES = $(COREFILES) index.html
 # sample code for testing core functionality
 TFILES = $(COREFILES)  test.php test_post.php hook_test.php
 TFILES =  index.php listRooms.php test_auth.php showThread.php
-TFILES =  index.php listRooms.php listPeople.php 
+TFILES =  index.php listRooms.php listPeople.php postMessage.php  showThread.php spark_example.css
 #install-test-auth: TFILES = test_auth.php
 
 STFILES = sparkui.css
@@ -85,6 +88,10 @@ install-lib: $(WEBDIR) $(LIBlocal)
 
 $(LIBlocal): $(WEBDIR)/%: $(REPO)/lib/%
 	cp $< $@
+
+show-local:
+	ls -l $(WEBDIR)
+
 
 $(HOOKlocal): $(WEBDIR)/%: $(REPO)/hooks/%
 	cp $< $@
