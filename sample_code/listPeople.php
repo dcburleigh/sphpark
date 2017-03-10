@@ -34,7 +34,9 @@
 	if (isset($_POST['max_items'])){
 		$max_items = $_POST['max_items'];
 	}
+	$verbose_ch = '';
 	if (isset($_POST['verbose'])){
+		$verbose_ch = 'CHECKED';
 		$verbose = $_POST['verbose'];
 	}
 
@@ -44,11 +46,81 @@
 		$t = $user_access_token;
 	}
 	$sp = new SparkClient($t);
+	/*
+	 * verify
+	$ok = $sp->validateToken();
+	$me = $sp->getMe();
+	//print_r($me);
+	print("<p>valid: $ok Me: " . $me->displayName . "</p>");
+	
+	$me = $sp->getPerson('me');
+	//print_r($me);
+	print("<p> Me: " . $me->displayName . "</p>");
+	
+	$id = 'Y2lzY29zcGFyazovL3VzL1dFQkhPT0svNzNjMmJjNTktZjQ0Mi00YmIwLTk0ZWQtMjIzYTJhMWM1ZDZj';
+	$msg = $sp->getMessage();
+	print_r($msg);
+	
+	$text = '{"id":"Y2lzY29zcGFyazovL3VzL1dFQkhPT0svNzNjMmJjNTktZjQ0Mi00YmIwLTk0ZWQtMjIzYTJhMWM1ZDZj","name":"darin3","targetUrl":"http://www.silurian.org/spark/hook_test.php","resource":"messages","event":"created","filter":"roomId=Y2lzY29zcGFyazovL3VzL1JPT00vNmViOGNjYTAtY2MyMS0xMWU1LWFkY2ItODM5OWFiYjg0ZGRh","orgId":"Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9udWxs","createdBy":"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODg5NjJhNC03OTIwLTQzNjItOWI4MC01ZjRmMjE5ZmVhZGE","appId":"Y2lzY29zcGFyazovL3VzL0FQUExJQ0FUSU9OL251bGw","status":"active","created":"2016-02-05T23:18:30.339Z","actorId":"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODg5NjJhNC03OTIwLTQzNjItOWI4MC01ZjRmMjE5ZmVhZGE","data":{"id":"Y2lzY29zcGFyazovL3VzL01FU1NBR0UvMzZmMmQwZjAtZjkzMy0xMWU2LWJiNDAtZDE1MjIzMWYyZTcy","roomId":"Y2lzY29zcGFyazovL3VzL1JPT00vNmViOGNjYTAtY2MyMS0xMWU1LWFkY2ItODM5OWFiYjg0ZGRh","roomType":"group","personId":"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODg5NjJhNC03OTIwLTQzNjItOWI4MC01ZjRmMjE5ZmVhZGE","personEmail":"darin.burleigh@cdw.com","created":"2017-02-22T19:15:04.191Z"}}';
+	$obj = json_decode($text);
 
+	print_r($obj);
+	print " <br/>id=" . $obj->id . " ID=";
+	print_r( $obj->data->id);
+	 */
+	
 	if ( $sp->error ) {
 		die("startup failed: " . $sp->error);
 	}
 
+	if ( isset($_POST['list_members'])){
+	
+		if ( $_POST['room_name']){
+			
+			
+			$room_name = $_POST['room_name'];
+			$sp->getRooms( );
+			// print_r($msg);
+			print " Nrooms=" . $sp->num_rooms;
+			foreach ( $sp->rooms as $room){
+				if ( $room->{'title'} == $room_name){
+					print_r($room);
+					$room_id = $room->id;
+					#$room_id = $room->{'id'};
+					#print "room id= $room_id ==" . $room->id;
+					break;
+				}
+			}
+			
+		}
+		elseif($_POST['room_id']){
+			$room_id = $_POST['room_id'];
+			$room = $sp->getRoom( $room_id );
+			$room_name = $room->title;
+		}
+		print "room: $room_id name: $room_name";
+		print "<h3>members</h3>";
+		$msg = $sp->getMemberships( array( 'roomId' => $room_id ) );
+		
+		if ( $sp->error ) {
+			die("get failed: " . $sp->error);
+		}
+		if ( $verbose ) {
+			print "<div class='raw_content'>";
+			print_r($msg);
+			print_r( $sp->memberships);
+			print "</div>";
+		}
+
+		print " N=" . $sp->num_memberships;
+		foreach ( $sp->memberships as $m ) {
+		$p = $sp->getPerson ( $m->{'personId'} );
+		print  "<br/>" . $p->{'displayName'} . "\n";
+		}
+		
+		
+	}
+	
 	if ( isset($_POST['list_people'])){
 
 		print "<h3>People</h3>";
@@ -89,6 +161,7 @@
 			$name = $person->{'firstName'} . ' ' . $person->{'lastName'};
 			$name .= '<span class="displayName">' . $person->{'displayName'} . '</span>';
 
+			$id = '<input name=personId value="' . $person->{'id'} . '" />';
 			$ne = count( $person->{'emails'} );
 			$nr = count( $person->{'roless'} );
 
@@ -98,6 +171,7 @@
 
 				. "  $ne emails "
 				. " Email: " . implode(', ', $person->{'emails'})
+				. " $id "
 					
 				. " Status: " . $person->{'status'}
 			. ' (' . $person->{'lastActivity'} . ') '
@@ -112,6 +186,8 @@
 
 	?>
 
+<hr>
+	
 
 	<form method="post" action="">
 
@@ -122,6 +198,21 @@
 		Verbose: <input type=test name="verbose"
 			value="<?php echo $verbose; ?>" /> <input type="submit"
 			name="list_people" value="List people" />
+	</form>
+	
+	
+<hr>
+	<form method="post" action="">
+
+		<div>Room ID: <input type=text name="room_id"
+			value="<?php echo $room_id; ?>" /> </div>
+			
+			<div>Room Name: <input type=text
+			name="room_name" value="<?php echo $room_name; ?>" /> </div>
+			
+		Verbose: <input type=checkbox name="verbose" <?php echo $verbose_ch; ?> />
+		<input type="submit"
+			name="list_members" value="List room members" />
 	</form>
 
 </body>

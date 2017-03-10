@@ -88,8 +88,9 @@
 				. "$n) "
 				#. $b
 				. $room->{'title'}
-				. " SIP: " . $room->{'sipAddress'}
+				#. " SIP: " . $room->{'sipAddress'}
 				#. $room->{'id'}
+				. '<input type=text name="room_id" value="' . $room->{'id'} . '" size=10 />'
 				. "</li>";
 		}
 		print "</ul>";
