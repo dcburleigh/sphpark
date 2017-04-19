@@ -4,9 +4,14 @@
  * Interface to Cisco Spark App authorization functions
  *
  */
+//require_once 'Errors.php';
+require_once 'LoggerTrait.php';
 
 class SparkAppAuth {
 
+	//use Errors;
+	use Logger;
+	
 	public $user_id;
 	private $user_token;
 
@@ -34,8 +39,8 @@ class SparkAppAuth {
 	public $user_tokens = array();
 
 	public $error;
-	private $logFH;
-	protected $log_file;
+	#private $logFH;
+	#protected $log_file;
 
 	public function __construct(){
 		global $user_id, $app_state, $spark_client_id, $spark_client_secret;
@@ -65,6 +70,8 @@ class SparkAppAuth {
 		#$this->access_code = 'MzJiMzYwMDYtYzU5Yi00NDI2LWJhMjYtZTgzYTYwZjU5OWE2YTllNzU5ZmEtMTYx';
 
 
+		$this->openLog( './sparkapp.log');
+		$this->log('begins');
 	}
 
 	public function getToken() {
@@ -190,7 +197,7 @@ class SparkAppAuth {
 		$url = $url . $arg_string;
 		curl_setopt($ch, CURLOPT_URL, $url);
 
-		print "url=$url";
+		//print "url=$url";
 		#return;
 
 		$contents = curl_exec($ch);
@@ -199,7 +206,8 @@ class SparkAppAuth {
 			return;
 		}
 		$this->response_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE);
-		print "got: $contents  code=" . $this->response_code;
+		print "<br/>got: $contents  code=" . $this->response_code;
+		$this->log("got: $contents  code=" . $this->response_code);
 
 	}
 
@@ -301,6 +309,8 @@ class SparkAppAuth {
 
 		print "url=$url args=$arg_string  ";
 		print_r($args);
+		$this->log("url=$url args=$arg_string  ");
+		$this->log(print_r($args, true) );
 		#return;
 
 		$contents = curl_exec($ch);
@@ -314,6 +324,7 @@ class SparkAppAuth {
 			return;
 		}
 		print " got: $contents  code=" . $this->response_code;
+		$this->log( " got: $contents  code=" . $this->response_code );
 
 		if ( $this->response_code  != 200) {
 			$this->error = "invalid response code=" . $this->response_code;
@@ -368,6 +379,7 @@ class SparkAppAuth {
 			return;
 		}
 		print " token=" . $token_info->{'access_token'};
+		$this->log( "token=" . $token_info->{'access_token'} );
 		$this->user_token = $token_info->{'access_token'};
 		$this->addUserToken($token_info);
 	}
@@ -418,7 +430,8 @@ class SparkAppAuth {
 		}
 		fclose($fh);
 
-		print "N = $n == " . count($this->user_tokens);
+		//print "N = $n == " . count($this->user_tokens);
+		$this->log("$n tokens ==" . count($this->user_tokens));
 
 	}
 	public function addUserToken( $token_info) {
@@ -461,6 +474,7 @@ class SparkAppAuth {
 			$this->user_tokens[$this->user_id][$name] = $token_info->{$name};
 		}
 		print $this->user_id . " add token \n";
+		$this->log("add token for " . $this->user_id);
 
 	}
 	public function setAccessCode( $code ) {
@@ -502,6 +516,7 @@ class SparkAppAuth {
 		return $this->user_token;
 
 	}
+	
 
 }
 ?>
