@@ -6,7 +6,7 @@ require_once 'AuthHandler.php';
 require_once 'SparkApp.php';
 
 $ah = new AuthHandler(  array (
-		'logfile' => '../logs/auth.log'
+		'logfile' => './auth.log'
 ) );
 $ah->log ( "started " );
 
@@ -74,6 +74,8 @@ function processHookRequest() {
       }
 
       $ah->log("got token");
+      
+      // save token 
 
 
 	} catch ( Exception $e ) {

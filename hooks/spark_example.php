@@ -3,16 +3,16 @@
  * endpoint for handling webhook, typically from Spark
 *
 */
-
-require_once 'SparkHookHandler.php';
+ini_set('include_path',  ini_get('include_path') . PATH_SEPARATOR . './etc');
 require_once 'config_inc.php';
+require_once 'SparkHookHandler.php';
 require_once 'SparkClient.php';
 
 $wh = new SparkHookHandler ( array (
 'logfile' => '../logs/hook.log'
 ) );
 // $wh->log ( "started " );
-$sp = new SparkClient ();
+$sp = new SparkClient ( $spark_access_token);
 // $wh->log ( "got client" );
 
 try {
@@ -42,7 +42,7 @@ function processHookRequest() {
 
 	if (! $wh->message_id) {
 		$wh->error = "no message ID";
-		$wh->log ( "no message ID in " . print_r($this->data, true) );
+		$wh->log ( "no message ID in " . print_r($wh->data, true) );
 		return;
 	}
 

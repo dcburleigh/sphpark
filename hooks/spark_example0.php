@@ -5,8 +5,10 @@
 */
 
 // print "begins";
-require_once 'SparkHookHandler.php';
+ini_set('include_path',  ini_get('include_path') . PATH_SEPARATOR . './etc');
+
 require_once 'config_inc.php';
+require_once 'SparkHookHandler.php';
 require_once 'SparkClient.php';
 
 $wh = new SparkHookHandler ( array (
@@ -70,6 +72,8 @@ function processHookRequest() {
 
 	/*
 	 * handle input:
+	 * 
+	 * 
 	*/
 
 }
