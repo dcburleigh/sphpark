@@ -98,6 +98,22 @@ class SparkClient {
 		$this->response = '';
 		$this->response_code = '';
 		$this->error = '';
+		
+		$this->isReady();
+	}
+	
+	public function isReady(){
+		if ( ! $this->token){
+			$this->error = "No token";
+			return false;
+		}
+		
+		if ( ! $this->client ){
+			$this->error = "No client";
+			return false;
+		}
+		
+		return true;
 	}
 	/*
 	 public function getToken() {
@@ -159,6 +175,7 @@ class SparkClient {
 		$url = '';
 		if ( count($args) ) {
 
+			// print_r($args);
 			foreach ( $allowed as $name ) {
 				if ( isset($args[$name])  && $args[$name] != ''){
 					if ( $url ) {
