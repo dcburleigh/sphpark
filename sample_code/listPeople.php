@@ -14,6 +14,7 @@
 	</p>
 
 	<?php  
+ini_set('include_path',  ini_get('include_path') . PATH_SEPARATOR . './etc');
 	require_once 'config_inc.php';
 	#print "form data: ";
 	#print_r($_POST);
@@ -41,10 +42,11 @@
 	}
 
 	require_once 'SparkClient.php';
-	$t = $spark_token;
+	$t = $spark_access_token;
 	if ( $user_access_token) {
 		$t = $user_access_token;
 	}
+	//print "token=$t a=$acess_token u=$user_access_token";
 	$sp = new SparkClient($t);
 	/*
 	 * verify
@@ -133,6 +135,12 @@
 		}
 
 		print " match=$match_value limit=$limit";
+		if ( $sp->isReady() ){
+			print " is ready ";
+		}
+		else {
+			die("not ready: " . $sp->error);
+		}
 		$msg = $sp->getPeople( array( 'displayName' => $match_value, 'email' => $match_email,  'max' => $limit));
 
 		if ( $sp->error ) {

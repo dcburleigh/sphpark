@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Show Thread</title>
 
-<link href="deldev.css" rel="stylesheet" type="text/css" />
+<link href="../styles/deldev.css" rel="stylesheet" type="text/css" />
 <link href="sparkui.css" rel="stylesheet" type="text/css" />
 <link href="spark_example.css" rel="stylesheet" type="text/css" />
 </head>
@@ -13,6 +13,8 @@
 		<a href="">Start over</a>
 	</p>
 	<?php
+
+	ini_set('include_path',  ini_get('include_path') . PATH_SEPARATOR . './etc');
 	require_once 'config_inc.php';
 	require_once 'utils.php';
 

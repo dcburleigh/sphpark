@@ -13,6 +13,8 @@
 		<a href="">Start over</a>
 	</p>
 	<?php
+
+	ini_set('include_path',  ini_get('include_path') . PATH_SEPARATOR . './etc');
 	require_once 'config_inc.php';
 	#print "form data: ";
 	#print_r($_POST);
