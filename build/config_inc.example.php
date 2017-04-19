@@ -10,6 +10,7 @@ $spark_token = '.....';
 
 /*
  * remote auth
+ * parameters must be 
  *   from the 'My Apps' page 
  */
 

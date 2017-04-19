@@ -1,37 +1,19 @@
 
 
-WEBROOT = /Users/engineer/Sites/apps
-LOCALURL = http://localhost/~engineer/spark/
-
-REPOROOT = /home/darin/git
-
-REMOTEPATH = /home/osmazome/public_html/silurian/spark
-REMOTEURL = http://www.silurian.org/spark
-REMOTE = osmazome@osmazome.org
-
-# -- 
-REMOTE = utiluser@filedepot.cdw.com
-REMOTEPATH = /srv/filedepot/bots/spark
-REMOTEURL = https://www.filedepot.cde.com/spark
-
-WEBDIR = /home/darin/git/silurian/spark
-
-LOGDIR = /home/darin/git/silurian/log
-LOCALURL = http://localhost/~engineer/spark/
+WEBROOT = 
+LOCALURL = 
+WEBDIR = 
+LOGDIR = 
 
 REPOROOT = $(g)
 
-REMOTE = utiluser@filedepot.cdw.com
-REMOTEPATH = /srv/filedepot/bots/spark
-REMOTEURL = https://filedepot.cdw.com/bots/spark
+DELDEVLIB = 
 
-#
-# local web
-#
-WEBDIR = 
-
-# ???
-LOGDIR = 
+# -- 
+REMOTENAME = 
+REMOTE = 
+REMOTEPATH = 
+REMOTEURL = 
 
 include makefile.conf
 
@@ -43,8 +25,39 @@ ifeq ($(WEBDIR),)
 WEBDIR = $(WEBROOT)/spark
 endif
 
+ifeq ($(DELDEVLIB),)
+DELDEVLIB = $(REPOROOT)/webroot/deldev
+endif
+
+
+# ...................................................................................
+
+#DELDEVFILES = $(DELDEVLIB)/Logger.php $(DELDEVLIB)/Errors.php
+#DELDEVFILES = $(DELDEVLIB)/LoggerTrait.php $(DELDEVLIB)/Errors.php
+DELDEVFILES = LoggerTrait.php Errors.php
+
+DELDEVlocal = $(patsubst %,$(WEBDIR)/%,$(DELDEVFILES))
+
+$(DELDEVlocal): $(WEBDIR)/%: $(DELDEVLIB)/%
+	cp $< $@
+
+deldevlib-local: $(DELDEVlocal)
+
+upload-deldevlib: 
+	rsync -av $(DELDEVFILES)  $(REMOTE):$(REMOTEPATH)
+
+show-dd:
+	@echo repo $(DELDEVLIB)
+	@echo files $(DELDEVFILES)
+	@echo local $(DELDEVlocal)
+
+
+
+
+# ...................................................................................
 COREFILES = config_inc.php auth.php getSparkAuth.php SparkApp.php
 COREFILES = auth.php getSparkAuth.php SparkApp.php
+COREFILES =  getSparkAuth.php SparkApp.php
 
 SPFILES = $(COREFILES) index.html
 
@@ -82,7 +95,8 @@ update-me: makefile
 makefile: %: $(REPO)/build/%
 	cp $< $@
 
-install-basic: $(WEBDIR) $(LOGDIR) install-lib  $(HOOKlocal)
+#install-basic: $(WEBDIR) $(LOGDIR) install-lib  $(HOOKlocal)
+install-basic: $(WEBDIR) $(LOGDIR) install-lib 
 
 install-lib: $(WEBDIR) $(LIBlocal)
 
@@ -90,14 +104,17 @@ $(LIBlocal): $(WEBDIR)/%: $(REPO)/lib/%
 	cp $< $@
 
 show-local:
-	ls -l $(WEBDIR)
+	ls -l $(WEBDIR) $(LOGDIR)
 
 
 $(HOOKlocal): $(WEBDIR)/%: $(REPO)/hooks/%
 	cp $< $@
 
+install-hook: install-basic  $(HOOKlocal)
+
+
 show-remote:
-	echo remote $(REMOTE)
+	echo remote $(REMOTE) name $(REMOTENAME)
 	echo remote $(REMOTEURL)
 	echo remote path $(REMOTEPATH)
 	ssh $(REMOTE) ls -l $(REMOTEPATH)
@@ -138,13 +155,24 @@ $(WEBDIR)/utils.php: $(WEBDIR)/%: $(COMMONDIR)/deldev/%
 $(WEBDIR)/deldev.css: $(WEBDIR)/%: $(COMMONDIR)/styles/%
 	cp $< $@
 
-install-test-auth install-test: $(WEBDIR) install-lib $(TESTlocal) $(STlocal) $(WEBDIR)/config_inc.php
+install-test: $(WEBDIR) install-lib $(TESTlocal) $(STlocal) $(WEBDIR)/config_inc.php
 
 $(TESTlocal): $(WEBDIR)/%: $(REPO)/sample_code/%
 	cp $< $@
 
 $(STlocal): $(WEBDIR)/%: $(REPO)/styles/%
 		cp $< $@
+
+# ...................................................................................
+install-test-auth:
+	@echo TODO
+
+
+install-ex1:
+	@echo TODO
+
+
+# ...................................................................................
 
 #install-test-auth: $(WEBDIR) install-lib
 #
@@ -153,25 +181,43 @@ $(STlocal): $(WEBDIR)/%: $(REPO)/styles/%
 AUTHLIB =  lib/HookHandler.php  lib/SparkApp.php lib/AuthHandler.php
 
 AUTHFILES = images/deldev_avatar.png  hooks/auth_handler.php build/config_inc.example.php
+AUTHFILES = images/deldev_avatar.png  hooks/auth_handler.php
 AUTHFILESlocal = $(patsubst %,$(REPO)/%,$(AUTHFILES) $(AUTHLIB))
 
 upload-app-auth:  $(AUTHFILESlocal)
 	rsync -av  $(AUTHFILESlocal) $(REMOTE):$(REMOTEPATH)
 
-upload-app-config:
-	rsync -av config_inc.SIL.php $(REMOTE):$(REMOTEPATH)/config_inc.php
+upload-app-config: config_inc.$(REMOTENAME).php
+	rsync -av config_inc.$(REMOTENAME).php $(REMOTE):$(REMOTEPATH)/config_inc.php
+
+install-app-config: config_inc.$(REMOTENAME).php
+	cp config_inc.$(REMOTENAME).php $(WEBDIR)/config_inc.php
+
+
+APPFILESlocal = $(WEBDIR)/test_auth.php
+
+$(APPFILESlocal): $(WEBDIR)/%:  $(REPO)/sample_code/%
+	cp $< $@
+
+install-app-local: install-app-config  install-basic $(APPFILESlocal)  deldevlib-local
 
 
 #
 # upload to remote server
 #
 upload-core: $(COREFILES)
-#	scp $(COREFILES) $(REMOTE):$(REMOTEPATH)
 	rsync -av  $(COREFILES) $(REMOTE):$(REMOTEPATH)
 
+#install-remote-app: upload-core upload-app-auth upload-app-config
+install-remote-app: upload-app-auth upload-app-config
+
+
+
+# ...................................................................................
 
 upload-hook: $(HFILES)
 	rsync -av  $(COREFILES) $(REMOTE):$(REMOTEPATH)
+
 
 test-hook-handler:
 	curl $(REMOTEURL)/hook_test.php
@@ -183,7 +229,7 @@ test0:
 test1:
 	curl '$(LOCALURL)/spark_example1.php?item=1'
 
-perl-mods: BINC  BINC/Spark.pm BINC/Erro.pm
+perl-mods: BINC  BINC/Spark.pm BINC/Error.pm
 
 BINC:
 	mkdir $@
