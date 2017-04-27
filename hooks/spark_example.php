@@ -8,8 +8,12 @@ require_once 'config_inc.php';
 require_once 'SparkHookHandler.php';
 require_once 'SparkClient.php';
 
+$log_dir = '../logs';
+$log_dir = './logs';
+#$log_dir = '/var/log';
+
 $wh = new SparkHookHandler ( array (
-'logfile' => '../logs/hook.log'
+'logfile' =>  $log_dir . '/hook.log'
 ) );
 // $wh->log ( "started " );
 $sp = new SparkClient ( $spark_access_token);
@@ -84,14 +88,19 @@ function processHookRequest() {
 	//
 	if ($text == '/whoami') {
 		postWhoami ( $msg );
+		$wh->addResponseElement("handlerAction", "posted response");
 	} elseif (preg_match ( '/^\/repeat(.+)/', $text, $matches )) {
 		postBotResponse ( $room_id, "You said: " . $msg->{'text'} );
+		$wh->addResponseElement("handlerAction", "posted response");
 	} elseif (preg_match ( '/^\/members/', $text, $matches )) {
 		postMemberList ( $msg );
+		$wh->addResponseElement("handlerAction", "posted response");
 	} elseif (preg_match ( '/^\/(\?|help)/', $text, $matches )) {
 		postHelpCommands ( $msg );
+		$wh->addResponseElement("handlerAction", "posted response");
 	} else {
 		$wh->log ( "no response defined, text=$text" );
+		$wh->addResponseElement("handlerAction", "none, text=$text");
 	}
 }
 function postHelpCommands($msg) {
