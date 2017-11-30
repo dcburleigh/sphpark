@@ -19,6 +19,7 @@
 	require_once 'utils.php';
 
 	require_once 'StaffDB.php';
+	
 
 	#print "form data: ";
 	#print_r($_POST);
@@ -97,6 +98,8 @@
 	
 
 	require_once 'SparkThread.php';
+
+	$t = $spark_access_token;
 	if ( isset($user_access_token)){
 		$t = $user_access_token;
 	}

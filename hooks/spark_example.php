@@ -8,16 +8,16 @@ require_once 'config_inc.php';
 require_once 'SparkHookHandler.php';
 require_once 'SparkClient.php';
 
-$log_dir = '../logs';
-$log_dir = './logs';
-#$log_dir = '/var/log';
+if ( ! isset( $log_dir)){
+	// default
+	$log_dir = './log';
+}
 
 $wh = new SparkHookHandler ( array (
 'logfile' =>  $log_dir . '/hook.log'
 ) );
 // $wh->log ( "started " );
 $sp = new SparkClient ( $spark_access_token);
-// $wh->log ( "got client" );
 
 try {
 
@@ -27,7 +27,6 @@ try {
 	$wh->log ( "process failed: err=" . $e->getMessage () );
 }
 $wh->printResponse (); // reply
-
 
 function processHookRequest() {
 	global $wh, $sp;

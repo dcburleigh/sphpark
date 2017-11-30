@@ -35,6 +35,7 @@
 
 	require_once 'SparkClient.php';
 	$t = $spark_token;
+	$t = $spark_access_token;
 	if ( $user_access_token) {
 		$t = $user_access_token;
 	}

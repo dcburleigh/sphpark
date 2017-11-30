@@ -43,6 +43,19 @@ $(DELDEVlocal): $(WEBDIR)/%: $(DELDEVLIB)/%
 
 deldevlib-local: $(DELDEVlocal)
 
+
+# ...................................................................................
+# remote
+
+
+
+show-remote:
+	echo remote $(REMOTE) name $(REMOTENAME)
+	echo remote $(REMOTEURL)
+	echo remote path $(REMOTEPATH)
+	ssh $(REMOTE) ls -l $(REMOTEPATH)
+
+
 upload-deldevlib: 
 	rsync -av $(DELDEVFILES)  $(REMOTE):$(REMOTEPATH)
 
@@ -96,7 +109,11 @@ makefile: %: $(REPO)/build/%
 	cp $< $@
 
 #install-basic: $(WEBDIR) $(LOGDIR) install-lib  $(HOOKlocal)
-install-basic: $(WEBDIR) $(LOGDIR) install-lib 
+install-basic: $(WEBDIR) $(LOGDIR) install-lib install-defaults
+
+#install-defaults: $(WEBDIR)/config_inc.php $(WEBDIR)/.htaccess $(WEBDIR)/index.html
+install-defaults: 
+	@echo no-op
 
 install-lib: $(WEBDIR) $(LIBlocal)
 
@@ -111,13 +128,6 @@ $(HOOKlocal): $(WEBDIR)/%: $(REPO)/hooks/%
 	cp $< $@
 
 install-hook: install-basic  $(HOOKlocal)
-
-
-show-remote:
-	echo remote $(REMOTE) name $(REMOTENAME)
-	echo remote $(REMOTEURL)
-	echo remote path $(REMOTEPATH)
-	ssh $(REMOTE) ls -l $(REMOTEPATH)
 
 LIBsrc = $(patsubst %,$(REPO)/sphpark/lib/%,$(LIBFILES))
 HOOKsrc = $(patsubst %,$(REPO)/sphpark/hooks/%,$(HOOKFILES))

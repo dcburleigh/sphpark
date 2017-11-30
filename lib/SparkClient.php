@@ -20,6 +20,14 @@ $msg = $sp->getRooms( array('showSipAddress' => 1,  'max' => $limit));
 if ( $sp->error ) {
 die("get failed: " . $sp->error);
 }
+
+print $sp->num_rooms . " Rooms found ";
+
+for ( $sp->rooms as $room){
+
+  print "title: " . $room->title;
+  print " created: " . $room->created;
+}
 *
 *
 */
@@ -201,6 +209,7 @@ class SparkClient {
 
 		// $this->initClient();
 		$url = $this->setUrl($path, $args,  $allowed );
+		#print "url: $url";
 
 		$contents = curl_exec($this->client);
 
@@ -355,6 +364,7 @@ class SparkClient {
 		}
 
 		$this->response = $contents;
+		$this->response_object = json_decode($contents);
 
 		return;
 

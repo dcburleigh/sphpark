@@ -5,6 +5,7 @@ PHP client for Spark (and related cloud bots)
 Definitions:
 REPO = path/to/this/repo
 REMOTE = the server where the code is installed
+WEBDIR = path/to/local-docroot
 
 ## Install
 
@@ -20,7 +21,9 @@ edit makefile.conf
 
 make install-basic
 
-edit path/to/spark/config_inc.php
+edit WEBDIR/config_inc.php
+
+make install-test
 
 * configure: remote auth HookHandler
 
