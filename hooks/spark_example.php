@@ -80,7 +80,7 @@ function processHookRequest() {
 	$room_id = $wh->data->data->roomId;
 	$text = $msg->{'text'};
 	$wh->log( implode("\t", array($wh->hook_name,  $msg->{'personEmail'}, $msg->{'roomId'} ) )   );
-	$wh->log( text );
+	#$wh->log( $text );
 
 	//
 	// switch
@@ -101,6 +101,7 @@ function processHookRequest() {
 		$wh->log ( "no response defined, text=$text" );
 		$wh->addResponseElement("handlerAction", "none, text=$text");
 	}
+	$wh->log("----------------------\n");
 }
 function postHelpCommands($msg) {
 	$commands = '';
@@ -145,7 +146,8 @@ function postMemberList($msg) {
 		$list = "No members!!! ";
 		return;
 	}
-	$list = "Members in this room\n";
+	$n = $sp->num_memberships;
+	$list = "$n Members in this room\n";
 	;
 	foreach ( $sp->memberships as $m ) {
 		$p = $sp->getPerson ( $m->{'personId'} );
@@ -180,7 +182,8 @@ function postBotResponse($room_id, $message) {
 		return;
 	}
 	$wh->log ( "posted got=" . $sp->response );
-	$wh->log ( "got m=" . print_r ( $msg, true ) );
+	$wh->log ( "message: " . $sp->response );
+	#$wh->log ( "got m=" . print_r ( $msg, true ) );
 }
 
 ?>
