@@ -16,7 +16,11 @@ class SparkHookHandler extends HookHandler {
 	function getRequest() {
 		parent::getRequest();
 
-
+	    // $this->log("data " . print_r($this->data, true) );
+        if ( ! $this->data ) {
+            $this->log("WARNING: request data is empty");
+            return;
+        }
 		$this->hook_name = $this->data->{'name'};
 		$this->resource_type = $this->data->{'resource'};
 

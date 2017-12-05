@@ -89,7 +89,6 @@ LIBFILES =  HookHandler.php  SparkHookHandler.php SparkClient.php SparkApp.php A
 HFILES = $(COREFILES) HookHandler.php hook_test.php
 HFILES = SparkHookHandler.php HookHandler.php hook_test.php
 
-HOOKFILES = hook_basic.php hook_example1.php
 
 TESTlocal = $(patsubst %,$(WEBDIR)/%,$(TFILES))
 STlocal = $(patsubst %,$(WEBDIR)/%,$(STFILES))
@@ -97,7 +96,8 @@ STlocal = $(patsubst %,$(WEBDIR)/%,$(STFILES))
 LIBlocal = $(patsubst %,$(WEBDIR)/%,$(LIBFILES))
 LIBsrc = $(patsubst %,$(REPO)/lib/%,$(LIBFILES))
 
-HOOKFILES = hook_basic.php  hook_box.php spark_example0.php
+HOOKFILES = hook_basic.php hook_example1.php
+HOOKFILES = hook_basic.php  hook_box.php spark_example0.php spark_example.php
 
 LIBlocal = $(patsubst %,$(WEBDIR)/%,$(LIBFILES))
 

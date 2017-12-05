@@ -366,7 +366,7 @@ class SparkClient {
 		$this->response = $contents;
 		$this->response_object = json_decode($contents);
 
-		return;
+		return true;
 
 	}
 	public function postMessage( $args ) {

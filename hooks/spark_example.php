@@ -182,7 +182,8 @@ function postBotResponse($room_id, $message) {
 		return;
 	}
 	$wh->log ( "posted got=" . $sp->response );
-	$wh->log ( "message: " . $sp->response );
+	$o = $sp->response_object;
+	$wh->log ( "message: " . $o->{'id'} );
 	#$wh->log ( "got m=" . print_r ( $msg, true ) );
 }
 
