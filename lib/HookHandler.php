@@ -24,6 +24,8 @@ class HookHandler {
 
 	private $body;   # raw text
 	public $data;    # JSON Request object
+	public $header_info;
+	public $headers = array();
 
 	public $secret;   // token expected for a valid application, configured by app,
 
@@ -65,6 +67,7 @@ class HookHandler {
 	private function clearRequest() {
 		$this->body = '';
 		$this->data = array();
+		$this->headers = array();
 		$this->resource_type = '';
 
 	}
@@ -79,9 +82,23 @@ class HookHandler {
 
 			#$this->log("get = " . print_r($_GET, true));
 		}
+		
 
 		$body = file_get_contents("php://input");
-
+		#$this->getRequestHeaders();
+		# $headers = $http_response_header;
+		$headers = getallheaders();
+		if ( isset($headers)){
+		    $this->header_info = print_r($headers, true);
+		    $this->headers = $headers;
+		}
+		else {
+		    $this->header_info = 'NULL';
+		}
+		    
+		    
+		    
+	
 		if ( $body == '' ) {
 
 			$this->log("GET contents:");
@@ -107,6 +124,46 @@ class HookHandler {
 		$this->hook_name = $this->data->{'name'};
 		$this->resource_type = $this->data->{'resource'};
 
+	}
+	public function getRequestHeaders(){
+	    /*
+	     * HTTP_HOST,
+HTTP_USER_AGENT,
+HTTP_ACCEPT,
+HTTP_ACCEPT_LANGUAGE,
+HTTP_ACCEPT_ENCODING,
+HTTP_REFERER,
+HTTP_CONNECTION,
+HTTP_UPGRADE_INSECURE_REQUESTS,
+HTTP_CACHE_CONTROL,
+PATH,
+SERVER_SIGNATURE,
+SERVER_SOFTWARE,
+SERVER_NAME,
+SERVER_ADDR,
+SERVER_PORT,
+REMOTE_ADDR,
+DOCUMENT_ROOT,
+REQUEST_SCHEME,
+	     * CONTEXT_PREFIX,CONTEXT_DOCUMENT_ROOT,
+	     * SERVER_ADMIN,
+SCRIPT_FILENAME,
+REMOTE_PORT,
+GATEWAY_INTERFACE,
+SERVER_PROTOCOL,
+REQUEST_METHOD,
+QUERY_STRING,
+REQUEST_URI,
+SCRIPT_NAME,
+PHP_SELF,
+REQUEST_TIME_FLOAT,
+REQUEST_TIME
+
+	     */
+	    #$this->header_info = implode(',' ,  array_keys($_SERVER));
+	    $this_header_info = print_r($http_response_header, true);
+	    
+	    // $this->h
 	}
 	public function addResponseElement( $name, $value) {
 		$this->response[ $name ] = $value;

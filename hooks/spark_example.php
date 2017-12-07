@@ -42,6 +42,8 @@ function processHookRequest() {
 	}
 
 	$wh->log ( "name = " . $wh->hook_name );
+	$wh->log("header: " . $wh->header_info);
+	$wh->log('secret: ' . $wh->secret);
 
 	if (! $wh->message_id) {
 		$wh->error = "no message ID";
@@ -169,10 +171,13 @@ function postBotResponse($room_id, $message) {
 		$wh->log ( "don't reply to myself" );
 		return;
 	}
+	
+	$t = time();
+	$message .= "\nTime: $t \n";
 	// prefix? suffix? so that we don't get an infinite loop
 	// $message = "Bot: ";
 	$message .= "\n--Bot";
-
+	
 	$msg = $sp->postMessage ( array (
 	'roomId' => $room_id,
 	'text' => $message
