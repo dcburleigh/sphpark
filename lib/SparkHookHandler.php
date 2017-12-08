@@ -51,10 +51,12 @@ class SparkHookHandler extends HookHandler
             $secret = $this->secret;
         }
         if ( ! isset($this->signature)){
+            $this->error = "No signature found";
             $this->log("No signature found");
             return false;
         }
         if ( ! $secret){
+            $this->error = "Secret is not specified";
             $this->log("Secret is not specified");
             return false;
         }
@@ -64,6 +66,7 @@ class SparkHookHandler extends HookHandler
         if ( $signature == $this->signature){
             return true;
         }
+        $this->error = "invalid signature: '$signature' <> " . $this->signature;
         $this->log("invalid signature: '$signature' <> " . $this->signature);
         $this->log("len=" . strlen( $this->body) );
         return false;

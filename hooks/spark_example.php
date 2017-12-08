@@ -133,6 +133,7 @@ function postWhoami($msg) {
 		$p = $sp->getPerson ( $person_id );
 		$wh->log ( "got person=" . print_r ( $p, true ) );
 		if ($sp->error) {
+		    $wh->error($sp->error);
 			$wh->log ( "ERROR - get person failed: " . $sp->error );
 			return;
 		}
@@ -191,6 +192,7 @@ function postBotResponse($room_id, $message) {
 	'text' => $message
 	) );
 	if ($sp->error) {
+	    $wh->error = $sp->error;
 		$wh->log ( "post failed: " . $sp->error );
 		return;
 	}
