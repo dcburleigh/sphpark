@@ -22,12 +22,12 @@
 */
 class HookHandler {
 
-	private $body;   # raw text
+	protected $body;   # raw text
 	public $data;    # JSON Request object
 	public $header_info;
 	public $headers = array();
 
-	public $secret;   // token expected for a valid application, configured by app,
+	protected $secret;   // token expected for a valid application, configured by app,
 
 
 	// request parameters expected by DelDev apps
@@ -48,6 +48,9 @@ class HookHandler {
 
 		if ( isset($args['logfile'])){
 			$this->logfile = $args['logfile'];
+		}
+		if ( isset($args['secret'])){
+		    $this->secret = $args['secret'];
 		}
 		$this->openLog();
 
@@ -84,8 +87,11 @@ class HookHandler {
 		}
 		
 
-		$body = file_get_contents("php://input");
-		#$this->getRequestHeaders();
+		$this->body = file_get_contents("php://input");
+		
+		/*
+		 * headers
+		 */
 		# $headers = $http_response_header;
 		$headers = getallheaders();
 		if ( isset($headers)){
@@ -94,30 +100,25 @@ class HookHandler {
 		}
 		else {
 		    $this->header_info = 'NULL';
+		    $this->headers = array('none' => '');
 		}
 		    
-		    
-		    
-	
-		if ( $body == '' ) {
+		if ( $this->body == '' ) {
 
-			$this->log("GET contents:");
 			foreach ( $_GET as $name => $value ) {
 				$this->data[$name] = $value;
 			}
+			$this->log("GET contents:" . print_r($this->date, true));
 			$this->addResponseElement("num_get_params", count($_GET) );
 
-			// $this->error = "no body";
-			// fwrite($this->logFH, "body=$body \n");
-			#$this->log("no POST/PUT body;  n=" . count($_GET) . " GET params");
 			return;
 
 		}
 		// $this->log("POST/PUT contents:");
 
-		// fwrite($this->logFH, "body=$body \n"); // raw contents (verbose logging)
+		// fwrite($this->logFH, "body=$this->body \n"); // raw contents (verbose logging)
 
-		$this->data = json_decode($body);
+		$this->data = json_decode($this->body);
 		//$this->log( print_r($this->data, true) );  // parsed contents
 
 		//?
@@ -125,46 +126,7 @@ class HookHandler {
 		$this->resource_type = $this->data->{'resource'};
 
 	}
-	public function getRequestHeaders(){
-	    /*
-	     * HTTP_HOST,
-HTTP_USER_AGENT,
-HTTP_ACCEPT,
-HTTP_ACCEPT_LANGUAGE,
-HTTP_ACCEPT_ENCODING,
-HTTP_REFERER,
-HTTP_CONNECTION,
-HTTP_UPGRADE_INSECURE_REQUESTS,
-HTTP_CACHE_CONTROL,
-PATH,
-SERVER_SIGNATURE,
-SERVER_SOFTWARE,
-SERVER_NAME,
-SERVER_ADDR,
-SERVER_PORT,
-REMOTE_ADDR,
-DOCUMENT_ROOT,
-REQUEST_SCHEME,
-	     * CONTEXT_PREFIX,CONTEXT_DOCUMENT_ROOT,
-	     * SERVER_ADMIN,
-SCRIPT_FILENAME,
-REMOTE_PORT,
-GATEWAY_INTERFACE,
-SERVER_PROTOCOL,
-REQUEST_METHOD,
-QUERY_STRING,
-REQUEST_URI,
-SCRIPT_NAME,
-PHP_SELF,
-REQUEST_TIME_FLOAT,
-REQUEST_TIME
-
-	     */
-	    #$this->header_info = implode(',' ,  array_keys($_SERVER));
-	    $this_header_info = print_r($http_response_header, true);
-	    
-	    // $this->h
-	}
+	
 	public function addResponseElement( $name, $value) {
 		$this->response[ $name ] = $value;
 	}

@@ -27,7 +27,18 @@ make install-test
 
 * configure: remote auth HookHandler
 
-### test: sample code
+### example: Spark webhook endpoint
+
+* install
+make install-hook
+
+* configure
+edit config_inc.php
+
+If your web hook was created with a secret, and you want to validate the signature,
+set the $webhook_secrt in config_inc.php.
+
+
 
 
 

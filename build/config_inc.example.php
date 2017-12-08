@@ -6,7 +6,12 @@
 
 // for Spark
 
-$spark_token = '.....';
+$spark_access_token = '.....';
+
+/*
+ * web hook secret, 
+ */
+// $webhook_secret = '';
 
 /*
  * remote auth

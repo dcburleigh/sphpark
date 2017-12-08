@@ -15,9 +15,10 @@ class SparkHookHandler extends HookHandler
 
     public $message_id;
 
-    public $secret_encrypted;
+    public $signature;
+    
+    public $validate_signature = false;
 
-    public $secretc;
 
     function getRequest()
     {
@@ -35,11 +36,37 @@ class SparkHookHandler extends HookHandler
         
         $this->message_id = $this->data->data->id;
         
-        $this->secret = '';
+        $this->signature = '';
         if (isset($this->headers['X-Spark-Signature'])) {
-            $this->secret_encrypted = $this->headers['X-Spark-Signature'];
-            // TODO: decrype
-            $this->secret = $this->headers['X-Spark-Signature'];
+            $this->signature = $this->headers['X-Spark-Signature'];
+            // TODO: decrypt
+            //$this->secret = $this->headers['X-Spark-Signature'];
         }
+    }
+    function checkSignature( $secret = null ){
+        if ( ! $this->validate_signature){
+            return true;
+        }
+        if ( ! $secret){
+            $secret = $this->secret;
+        }
+        if ( ! isset($this->signature)){
+            $this->log("No signature found");
+            return false;
+        }
+        if ( ! $secret){
+            $this->log("Secret is not specified");
+            return false;
+        }
+        // $this->log("using secret: $secret \n" . $this->body);
+        $signature = hash_hmac('sha1', $this->body, $secret);
+        ###$this->log("compare: '$signature' <> " . $this->signature);
+        if ( $signature == $this->signature){
+            return true;
+        }
+        $this->log("invalid signature: '$signature' <> " . $this->signature);
+        $this->log("len=" . strlen( $this->body) );
+        return false;
+        
     }
 }

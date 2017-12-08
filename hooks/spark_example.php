@@ -14,8 +14,13 @@ if ( ! isset( $log_dir)){
 }
 
 $wh = new SparkHookHandler ( array (
-'logfile' =>  $log_dir . '/hook.log'
+'logfile' =>  $log_dir . '/hook.log', 'secret' => $webhook_secret
 ) );
+if ( isset($webhook_secret)){
+    $wh->validate_signature = true; // optional 
+}
+// $wh->validate_signature = true; // optional 
+
 // $wh->log ( "started " );
 $sp = new SparkClient ( $spark_access_token);
 
@@ -42,8 +47,11 @@ function processHookRequest() {
 	}
 
 	$wh->log ( "name = " . $wh->hook_name );
-	$wh->log("header: " . $wh->header_info);
-	$wh->log('secret: ' . $wh->secret);
+	// $wh->log("header: " . $wh->header_info);
+	if ( ! $wh->checkSignature()){
+	    $wh->log("invalid signature");
+	    return;
+	}
 
 	if (! $wh->message_id) {
 		$wh->error = "no message ID";
