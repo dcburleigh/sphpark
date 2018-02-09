@@ -17,14 +17,17 @@ REMOTEURL =
 
 include makefile.conf
 
+# Main source
 ifeq ($REPO),)
 REPO = $(REPOROOT)/sphpark
 endif
 
+# target installation directory
 ifeq ($(WEBDIR),)
 WEBDIR = $(WEBROOT)/spark
 endif
 
+# source for common DelDev classes, etc
 ifeq ($(DELDEVLIB),)
 DELDEVLIB = $(REPOROOT)/webroot/deldev
 endif
@@ -34,7 +37,7 @@ endif
 
 #DELDEVFILES = $(DELDEVLIB)/Logger.php $(DELDEVLIB)/Errors.php
 #DELDEVFILES = $(DELDEVLIB)/LoggerTrait.php $(DELDEVLIB)/Errors.php
-DELDEVFILES = LoggerTrait.php Errors.php
+DELDEVFILES = LoggerTrait.php Errors.php  example.php deldev_template.php
 
 DELDEVlocal = $(patsubst %,$(WEBDIR)/%,$(DELDEVFILES))
 
@@ -77,7 +80,7 @@ SPFILES = $(COREFILES) index.html
 # sample code for testing core functionality
 TFILES = $(COREFILES)  test.php test_post.php hook_test.php
 TFILES =  index.php listRooms.php test_auth.php showThread.php
-TFILES =  index.php listRooms.php listPeople.php postMessage.php  showThread.php spark_example.css
+TFILES =  index.php listRooms.php listPeople.php postMessage.php  showThread.php spark_example.css lookupUser.php  
 #install-test-auth: TFILES = test_auth.php
 
 STFILES = sparkui.css
@@ -165,7 +168,7 @@ $(WEBDIR)/utils.php: $(WEBDIR)/%: $(COMMONDIR)/deldev/%
 $(WEBDIR)/deldev.css: $(WEBDIR)/%: $(COMMONDIR)/styles/%
 	cp $< $@
 
-install-test: $(WEBDIR) install-lib $(TESTlocal) $(STlocal) $(WEBDIR)/config_inc.php
+install-sample install-test: deldevlib-local  $(WEBDIR) install-lib $(TESTlocal) $(STlocal) $(WEBDIR)/config_inc.php
 
 $(TESTlocal): $(WEBDIR)/%: $(REPO)/sample_code/%
 	cp $< $@
@@ -203,7 +206,6 @@ upload-app-config: config_inc.$(REMOTENAME).php
 install-app-config: config_inc.$(REMOTENAME).php
 	cp config_inc.$(REMOTENAME).php $(WEBDIR)/config_inc.php
 
-
 APPFILESlocal = $(WEBDIR)/test_auth.php
 
 $(APPFILESlocal): $(WEBDIR)/%:  $(REPO)/sample_code/%
@@ -220,8 +222,6 @@ upload-core: $(COREFILES)
 
 #install-remote-app: upload-core upload-app-auth upload-app-config
 install-remote-app: upload-app-auth upload-app-config
-
-
 
 # ...................................................................................
 
