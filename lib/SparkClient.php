@@ -242,6 +242,13 @@ class SparkClient {
 		return;
 
 	}
+	public function getOrg($org_id){
+	    $this->get( 'organizations/' . $org_id, array() );
+	    if ($this->error) {
+	        return;
+	    }
+	    return $this->response_object;
+	}
 
 	public function getMe() {
 		return $this->getPerson( 'me');
