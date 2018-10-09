@@ -43,6 +43,9 @@ class SparkClient {
 
 	private $client;   // the curl object
 
+	public $header_string; // string of response headers 
+	public $headers = array(); // name/value hash of response headers 
+	
 	public $response;  //(JSON) string contents of API request
 	public $response_object;  //JSON string decoded into Object
 
@@ -93,7 +96,9 @@ class SparkClient {
 
 		curl_setopt($this->client,  CURLOPT_VERBOSE, true);
 		curl_setopt($this->client , CURLOPT_RETURNTRANSFER, true); //do not output directly, use variable
-
+		
+		// curl_setopt($this->client,  CURLOPT_HEADER, true); // get the headers
+		
 		// ???
 		#curl_setopt($this->client, CURLOPT_HTTPHEADER,array('Content-Type: application/json'));
 		#curl_setopt($this->client , CURLOPT_HTTPHEADER, array('Accept: application/json',  "Authorization: Bearer ".$this->token));
@@ -103,6 +108,8 @@ class SparkClient {
 
 	}
 	public function clearRequest() {
+		$this->header_string = '';
+		
 		$this->response = '';
 		$this->response_code = '';
 		$this->error = '';
@@ -149,6 +156,9 @@ class SparkClient {
 		return $this->token_valid;
 	}
 
+	public function getCode(){
+	    return $this->response_code;
+	}
 	public function getResponse() {
 		return $this->response;
 	}
@@ -210,9 +220,19 @@ class SparkClient {
 		// $this->initClient();
 		$url = $this->setUrl($path, $args,  $allowed );
 		#print "url: $url";
-
+		
 		$contents = curl_exec($this->client);
-
+		$body = $contents;
+		#curl_setopt($ch, CURLOPT_HEADER, 1);
+		/*
+		 * 
+		$s = curl_getinfo( $this->client, CURLINFO_HEADER_SIZE);
+		$header = substr($contents, 0, $s);
+		
+		$this->header_string = $header;
+		$body = substr($contents, $s);
+		
+		 */
 		if ( curl_errno($this->client )) {
 			$this->error =  "failed: " . curl_error($this->client );
 			return;
@@ -220,13 +240,26 @@ class SparkClient {
 
 		#		$info = curl_getinfo( $this->client);
 		$this->response_code = curl_getinfo( $this->client, CURLINFO_HTTP_CODE);
+		/*
+		 * TODO
+		 * if ( $this->response_code == 429) {
+		 *     // pause...
+		 *     // re-get
+		 *     // try up to $max_get tries
+		 *     }
+		 */
 		if ( $this->response_code != '200') {
-			$this->error = "Get failed, url=$url contents=$contents, code=" . $this->response_code;
+			//$this->error = "Get failed, url=$url contents=$contents, code=" . $this->response_code;
+		   
+		    $t = curl_getinfo( $this->client, CURLINFO_CONTENT_TYPE);
+
+		    $this->error = "Get failed, url=$url type=$t  code=" . $this->response_code;
+		   #$this->error = "Get failed, url=$url h=<pre>$header</pre> {t=$t s=$s)  code=" . $this->response_code;
 			return;
 		}
 
-		$this->response = $contents;  // JSON string
-		$this->response_object = json_decode($contents);
+		$this->response = $body;  // JSON string
+		$this->response_object = json_decode($body);
 	}
 
 	public function getMemberships( $args = array() ) {
