@@ -130,7 +130,7 @@ show-local:
 $(HOOKlocal): $(WEBDIR)/%: $(REPO)/hooks/%
 	cp $< $@
 
-install-hook: install-basic  $(HOOKlocal)
+install-hook-handler: install-basic  $(HOOKlocal)
 
 LIBsrc = $(patsubst %,$(REPO)/sphpark/lib/%,$(LIBFILES))
 HOOKsrc = $(patsubst %,$(REPO)/sphpark/hooks/%,$(HOOKFILES))
